@@ -63,23 +63,19 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     };
     const docRef = await db.collection("file").add(photoData);
 
-    
-    // Kirim link foto ke model untuk prediksi
-    const pythonProcess = spawn("python" ["app.py", signedUrl]);
+    const pythonProcess = spawn("python",  ["app.py", signedUrl]);
 
     let prediction = "";
     let errorOutput = "";
 
     pythonProcess.stdout.on("data", (data) => {
-      // Data yang diterima dari skrip Python (hasil prediksi)
       prediction += data.toString();
     });
 
     pythonProcess.stderr.on("data", (data) => {
-      // Kesalahan yang terjadi di skrip Python
       errorOutput += data.toString();
     });
-    
+
     pythonProcess.on("close", async (code) => {
       console.log(`Child process exited with code ${code}`);
 
